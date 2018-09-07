@@ -8,9 +8,8 @@
 			"properties": {
 				"email": {
 					"type": "string",
-					"description": "a-zA-Z0-9-]+\\\\.[a-zA-Z0-9-.]+$",
 					"format": "email",
-					"pattern": "^[a-zA-Z0-9_.+-]+"
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
 				},
 				"name": {
 					"type": "string",
@@ -32,9 +31,8 @@
 			"properties": {
 				"email": {
 					"type": "string",
-					"description": "a-zA-Z0-9-]+\\\\.[a-zA-Z0-9-.]+$",
 					"format": "email",
-					"pattern": "^[a-zA-Z0-9_.+-]+"
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
 				},
 				"name": {
 					"type": "string",

@@ -7,14 +7,14 @@ import { expressAuthentication } from './../authentication/authentication';
 const models: TsoaRoute.Models = {
     "UserAttributes": {
         "properties": {
-            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+" } } },
+            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
             "id": { "dataType": "double" },
         },
     },
     "UserRequestData": {
         "properties": {
-            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+" } } },
+            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
         },
     },

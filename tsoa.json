@@ -1,6 +1,6 @@
 {
   "swagger": {
-    "entryFile": "./build/routes.ts",
+    "entryFile": "./src/routes/routes.ts",
     "outputDirectory": "./src/swagger",
     "specMerging": "recursive",
     "spec": {}
