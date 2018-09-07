@@ -1,0 +1,131 @@
+{
+	"basePath": "/service",
+	"consumes": [
+		"application/json"
+	],
+	"definitions": {
+		"UserAttributes": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"description": "a-zA-Z0-9-]+\\\\.[a-zA-Z0-9-.]+$",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+"
+				},
+				"name": {
+					"type": "string",
+					"minLength": 1
+				},
+				"id": {
+					"type": "number",
+					"format": "double",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"email",
+				"name"
+			],
+			"type": "object"
+		},
+		"UserRequestData": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"description": "a-zA-Z0-9-]+\\\\.[a-zA-Z0-9-.]+$",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+"
+				},
+				"name": {
+					"type": "string",
+					"minLength": 1
+				}
+			},
+			"required": [
+				"email",
+				"name"
+			],
+			"type": "object"
+		}
+	},
+	"info": {
+		"title": "opya-backend",
+		"version": "1.0.0",
+		"license": {
+			"name": "ISC"
+		}
+	},
+	"paths": {
+		"/users/{id}": {
+			"get": {
+				"operationId": "GetById",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserAttributes"
+						}
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "int32",
+						"type": "integer"
+					}
+				]
+			}
+		},
+		"/users": {
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserAttributes"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [
+					{
+						"admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/UserRequestData"
+						}
+					}
+				]
+			}
+		}
+	},
+	"produces": [
+		"application/json"
+	],
+	"swagger": "2.0",
+	"securityDefinitions": {}
+}

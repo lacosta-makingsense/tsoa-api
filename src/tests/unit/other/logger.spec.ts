@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { stub } from 'sinon';
 
-import { Logger } from '../../../config/Logger';
+import { Logger } from '../../../util/logger';
 
 describe('Logger', () => {
   const exampleInput = { a: 1 };

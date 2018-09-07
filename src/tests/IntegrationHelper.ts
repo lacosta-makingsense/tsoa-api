@@ -1,41 +1,31 @@
-import { expect } from 'chai';
+import * as superTest from 'supertest';
 import { SuperTest } from 'supertest';
 
-import { iocContainer } from '../ioc';
-import { SQLSetupHelper } from '../config/SQLSetupHelper';
+import { iocContainer } from '../config/ioc';
+import { DbConnection } from '../config/db-connection';
+import { Models } from '../models';
+import { Server } from '../server/server';
 import { ROOT_PATH } from './constants';
 
-export type Response<T> = Promise<{
-  status: number;
-  body: T;
-}>;
-
-export class IntegrationHelper {
+class IntegrationHelper {
   public app: SuperTest<any>;
-  public rootPath: string = ROOT_PATH;
-  public loginPath: string = `${this.rootPath}/auth/login`;
-  public userPath: string = `${this.rootPath}/users`;
-  public channelPath: string = `${this.rootPath}/channels`;
-  public messagePath: string = `${this.rootPath}/messages`;
+  public rootPath = ROOT_PATH;
 
-  public static setup(): void {
-    xit('SQL DB', async () => {
-      const sqlHelper = iocContainer.get<SQLSetupHelper>(SQLSetupHelper);
-      await sqlHelper.sync({ force: true });
-      expect(1).to.equal(1);
-    });
+  private dbConnection: DbConnection;
+
+  constructor() {
+    this.dbConnection = iocContainer.get<DbConnection>(DbConnection);
   }
 
-  constructor(app: SuperTest<any>) {
-    this.app = app;
+  public async setupDb() {
+    await this.dbConnection.connect();
+    iocContainer.get<Models>(Models);
+    await this.dbConnection.sync();
   }
 
-  public testPagination(res: any): void {
-    expect(res.status).to.equal(200);
-    expect(res.body.count).to.be.greaterThan(0);
-    expect(res.body.page).to.be.equal(1);
-    expect(res.body.limit).to.equal(1);
-    expect(res.body.totalPages).to.be.greaterThan(0);
-    expect(res.body.docs).to.have.length; // tslint:disable-line
+  public async createServer() {
+    this.app = superTest(new Server().app);
   }
 }
+
+export default new IntegrationHelper();

@@ -1,17 +1,16 @@
 import { expect } from 'chai';
 
-import { UserService } from '../../../services';
-import { MockBaseRepository } from '../mocks/MockBaseRepository';
-import { generateUserModel } from '../../data/models';
+import { UserService } from '../../../services/user';
+import userModelMock from '../mocks/UserModelMock';
 
 describe('UserService', () => {
   let service: UserService;
+
   beforeEach(() => {
-    // service = new UserService(new MockBaseRepository(generateUserModel()) as any);
+    service = new UserService(userModelMock as any);
   });
 
   it('should instantiate', async () => {
-    service = new UserService(new MockBaseRepository(generateUserModel()) as any);
-    expect(!!service).to.be.true; // tslint:disable-line
+    expect(service).to.exist; // tslint:disable-line
   });
 });
