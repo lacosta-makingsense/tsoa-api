@@ -66,6 +66,53 @@ export function RegisterRoutes(app: any) {
             const promise = controller.create.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, next);
         });
+    app.put('/service/users/:id',
+        authenticateMiddleware([{ "name": "admin" }]),
+        function(request: any, response: any, next: any) {
+            const args = {
+                id: { "in": "path", "name": "id", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "id" } } },
+                body: { "in": "body", "name": "body", "required": true, "ref": "UserRequestData" },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = iocContainer.get<UserController>(UserController);
+            if (typeof controller['setStatus'] === 'function') {
+                (<any>controller).setStatus(undefined);
+            }
+
+
+            const promise = controller.update.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, next);
+        });
+    app.delete('/service/users/:id',
+        authenticateMiddleware([{ "name": "admin" }]),
+        function(request: any, response: any, next: any) {
+            const args = {
+                id: { "in": "path", "name": "id", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "id" } } },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = iocContainer.get<UserController>(UserController);
+            if (typeof controller['setStatus'] === 'function') {
+                (<any>controller).setStatus(undefined);
+            }
+
+
+            const promise = controller.delete.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, next);
+        });
 
     function authenticateMiddleware(security: TsoaRoute.Security[] = []) {
         return (request: any, response: any, next: any) => {

@@ -23,4 +23,16 @@ export class UserService {
   public async create(userData: UserRequestData): Promise<UserInstance> {
     return await this.userModel.create(userData);
   }
+
+  public async update(id: number, userData: UserRequestData): Promise<UserInstance> {
+    const user = await this.getById(id);
+
+    return await user.update(userData);
+  }
+
+  public async delete(id: number): Promise<void> {
+    const user = await this.getById(id);
+
+    return await user.destroy();
+  }
 }
