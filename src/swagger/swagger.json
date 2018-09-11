@@ -1,0 +1,290 @@
+{
+	"basePath": "/service",
+	"consumes": [
+		"application/json"
+	],
+	"definitions": {
+		"UserAttributes": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+				},
+				"name": {
+					"type": "string",
+					"minLength": 1
+				},
+				"id": {
+					"type": "number",
+					"format": "double",
+					"x-nullable": true
+				},
+				"createdAt": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				},
+				"updatedAt": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"email",
+				"name"
+			],
+			"type": "object"
+		},
+		"PaginationResponseUserAttributes[]": {
+			"properties": {
+				"count": {
+					"type": "number",
+					"format": "double"
+				},
+				"items": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/UserAttributes"
+					}
+				}
+			},
+			"required": [
+				"count",
+				"items"
+			],
+			"type": "object"
+		},
+		"UserRequestData": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+				},
+				"name": {
+					"type": "string",
+					"minLength": 1
+				}
+			},
+			"required": [
+				"email",
+				"name"
+			],
+			"type": "object"
+		}
+	},
+	"info": {
+		"title": "tsoa-api",
+		"version": "1.0.0",
+		"license": {
+			"name": "ISC"
+		}
+	},
+	"paths": {
+		"/users/{id}": {
+			"get": {
+				"operationId": "Get",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserAttributes"
+						}
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "int32",
+						"type": "integer"
+					}
+				]
+			},
+			"put": {
+				"operationId": "Update",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserAttributes"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [
+					{
+						"admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "int32",
+						"type": "integer"
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/UserRequestData"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "Delete",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [
+					{
+						"admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"format": "int32",
+						"type": "integer"
+					}
+				]
+			}
+		},
+		"/users": {
+			"get": {
+				"operationId": "Search",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/PaginationResponseUserAttributes[]"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"format": "int32",
+						"type": "integer",
+						"minimum": 1
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"format": "int32",
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 100
+					},
+					{
+						"in": "query",
+						"name": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"in": "query",
+						"name": "sortBy",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"in": "query",
+						"name": "sortDirection",
+						"required": false,
+						"type": "string",
+						"enum": [
+							"ASC",
+							"DESC"
+						]
+					}
+				]
+			},
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/UserAttributes"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [
+					{
+						"admin": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/UserRequestData"
+						}
+					}
+				]
+			}
+		}
+	},
+	"produces": [
+		"application/json"
+	],
+	"swagger": "2.0",
+	"securityDefinitions": {}
+}
