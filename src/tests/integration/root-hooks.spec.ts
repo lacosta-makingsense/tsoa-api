@@ -1,4 +1,4 @@
-import integrationHelper from '../IntegrationHelper';
+import integrationHelper from '../integration-helper';
 
 before(async () => {
   await integrationHelper.setupDb();

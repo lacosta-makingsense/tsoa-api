@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { UserService } from '../../../services/user';
-import userModelMock from '../mocks/UserModelMock';
+import userModelMock from '../mocks/user.model';
 
 describe('UserService', () => {
   let service: UserService;

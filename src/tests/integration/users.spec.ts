@@ -1,20 +1,23 @@
 import { expect } from 'chai';
 
-import integrationHelper from '../IntegrationHelper';
+import integrationHelper from '../integration-helper';
+import integrationOperations from '../integration-operations';
 import { UserRequestData } from '../../types/user';
 
 const route: string = `${integrationHelper.rootPath}/users`;
-const entityName: string = 'user';
+const entityName: string = 'Users';
 
-describe(`${route}`, () => {
+describe(`${entityName} - ${route}`, () => {
 
-  const userRequest: UserRequestData = {
-    email: 'test@email.com',
-    name: 'Test Name'
-  };
+  beforeEach(() => integrationOperations.deleteAllUsers());
 
   describe('POST', () => {
-    it(`should create: ${entityName}`, async () => {
+    it(`should create`, async () => {
+      const userRequest: UserRequestData = {
+        email: 'test@email.com',
+        name: 'Test Name'
+      };
+
       const res = await integrationHelper.app.post(route).send(userRequest);
       expect(res.status).to.equal(200);
       expect(res.body).to.have.property('id');
@@ -23,24 +26,56 @@ describe(`${route}`, () => {
       expect(res.body).to.have.property('email');
       expect(res.body.email).to.equal('test@email.com');
     });
-    it(`should FAIL to create: ${entityName}`, async () => {
+
+    it(`should fail to create if missing params`, async () => {
       const res = await integrationHelper.app.post(route).send({});
+      expect(res.status).to.equal(400);
+    });
+
+    it(`should fail to create if invalid params`, async () => {
+      const userRequest: UserRequestData = {
+        email: 'invalid',
+        name: 'Test Name'
+      };
+
+      const res = await integrationHelper.app.post(route).send(userRequest);
       expect(res.status).to.equal(400);
     });
   });
 
-  // describe('PUT /{id}', () => {
-  //   it(`should update: ${entityName}`, async () => {
-  //     model.name = `${model.name}_edited`;
-  //     const res = await app.put(`${route}/${model.id}`).send(model);
-  //     expect(res.status).to.equal(200);
-  //     model = res.body;
-  //   });
-  //   it(`should FAIL to update: ${entityName}`, async () => {
-  //     const res = await app.put(`${route}/${model.id}`).send({});
-  //     expect(res.status).to.equal(400);
-  //   });
-  // });
+  describe('PUT /{id}', () => {
+    it(`should update`, async () => {
+      const user = await integrationOperations.createUser(1);
+
+      const userRequest: UserRequestData = {
+        email: 'test@email.com',
+        name: 'Test Name'
+      };
+
+      const res = await integrationHelper.app.put(`${route}/${user.id}`).send(userRequest);
+      expect(res.status).to.equal(200);
+      expect(res.body.id).to.deep.equal(user.id);
+      expect(res.body.email).to.deep.equal('test@email.com');
+      expect(res.body.name).to.deep.equal('Test Name');
+    });
+
+    it(`should fail to update if missing`, async () => {
+      const userRequest: UserRequestData = {
+        email: 'test@email.com',
+        name: 'Test Name'
+      };
+
+      const res = await integrationHelper.app.put(`${route}/111111111`).send(userRequest);
+      expect(res.status).to.equal(404);
+    });
+
+    it(`should fail to update if missing`, async () => {
+      const user = await integrationOperations.createUser(1);
+
+      const res = await integrationHelper.app.put(`${route}/${user.id}`).send({});
+      expect(res.status).to.equal(400);
+    });
+  });
 
   // describe('GET', () => {
   //   it(`should get paginated: ${entityName}`, async () => {
@@ -56,28 +91,38 @@ describe(`${route}`, () => {
   // });
 
   describe('GET /{id}', () => {
-    it(`should get one: ${entityName}`, async () => {
-      // const res = await app.get(`${route}/${request.id}`);
-      // expect(res.status).to.equal(200);
-      // expect(res.body).to.deep.equal(model);
-    });
-    it(`should FAIL to get one: ${entityName}`, async () => {
-      let res = await integrationHelper.app.get(`${route}/11111111`);
-      expect(res.status).to.equal(404);
+    it(`should get one`, async () => {
+      const user = await integrationOperations.createUser(1);
 
-      res = await integrationHelper.app.get(`${route}/dummy`);
+      const res = await integrationHelper.app.get(`${route}/${user.id}`);
+      expect(res.status).to.equal(200);
+      expect(res.body.id).to.deep.equal(user.id);
+      expect(res.body.email).to.deep.equal(user.email);
+      expect(res.body.name).to.deep.equal(user.name);
+    });
+
+    it(`should fail to get one if missing`, async () => {
+      const res = await integrationHelper.app.get(`${route}/11111111`);
+      expect(res.status).to.equal(404);
+    });
+
+    it(`should fail to get one if invalid`, async () => {
+      const res = await integrationHelper.app.get(`${route}/dummy`);
       expect(res.status).to.equal(400);
     });
   });
 
-  // describe('DELETE /{id}', () => {
-  //   it(`should delete one: ${entityName}`, async () => {
-  //     const res = await app.delete(`${route}/${model.id}`);
-  //     expect(res.status).to.equal(204);
-  //   });
-  //   it(`should FAIL to delete one: ${entityName}`, async () => {
-  //     const res = await app.delete(`${route}/${model.id}`);
-  //     expect(res.status).to.equal(404);
-  //   });
-  // });
+  describe('DELETE /{id}', () => {
+    it(`should delete one`, async () => {
+      const user = await integrationOperations.createUser(1);
+
+      const res = await integrationHelper.app.delete(`${route}/${user.id}`);
+      expect(res.status).to.equal(204);
+    });
+
+    it(`should FAIL to delete one: ${entityName}`, async () => {
+      const res = await integrationHelper.app.delete(`${route}/11111111`);
+      expect(res.status).to.equal(404);
+    });
+  });
 });

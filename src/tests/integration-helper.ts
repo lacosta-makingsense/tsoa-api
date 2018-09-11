@@ -13,20 +13,17 @@ class IntegrationHelper {
   public rootPath = ROOT_PATH;
 
   constructor(@inject(DbConnection) private dbConnection: DbConnection,
-              @inject(Models) private models: Models) {
+              @inject(Models) private models: Models) { // tslint:disable-line
   }
 
   public async setupDb() {
     await this.dbConnection.connect();
-    this.models.setup();
     await this.dbConnection.sync();
   }
 
   public async createServer() {
     this.app = superTest(new Server().app);
   }
-
-  // public async deleteAllUsers() {}
 }
 
 export default iocContainer.resolve(IntegrationHelper);
