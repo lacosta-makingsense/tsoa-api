@@ -79,7 +79,7 @@ describe(`${entityName} - ${route}`, () => {
 
   describe('GET', () => {
     it(`should search`, async () => {
-      const user1 = await integrationOperations.createUser(1);
+      await integrationOperations.createUser(1);
       const user2 = await integrationOperations.createUser(2);
 
       const res = await integrationHelper.app.get(
