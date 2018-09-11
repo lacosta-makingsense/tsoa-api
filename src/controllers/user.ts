@@ -6,7 +6,7 @@ import {
   Post,
   Delete,
   Security,
-  // Query,
+  Query,
   Path,
   Body,
   Response,
@@ -15,7 +15,7 @@ import {
 
 import { ProvideSingleton, inject } from '../config/ioc';
 import { UserAttributes, UserRequestData } from '../types/user';
-// import { PaginationResponse } from '../types/pagination';
+import { PaginationResponse, SortDirection } from '../types/pagination';
 import { UserService } from '../services/user';
 
 @Tags('users')
@@ -31,7 +31,7 @@ export class UserController extends Controller {
    * @isInt id
    */
   @Get('{id}')
-  public async getById(@Path() id: number): Promise<UserAttributes> {
+  public async get(@Path() id: number): Promise<UserAttributes> {
     const user = await this.userService.getById(id);
     return user.toJSON();
   }
@@ -40,17 +40,27 @@ export class UserController extends Controller {
    * @param {number} page
    * @isInt page
    * @minimum page 1
+   * @param {number} limit
+   * @isInt limit
+   * @minimum limit 1
+   * @maximum limit 100
+   * @param {string} query
+   * @isString query
+   * @param {string} sortBy
+   * @isString sortBy
+   * @param {string} sortDirection
+   * @pattern ^ASC|DESC$
    */
-  // @Response(400, 'Bad request')
-  // @Get()
-  // public async getPaginated(
-  //   @Query('page') page: number,
-  //   @Query('limit') limit: number,
-  //   @Query('fields') fields?: string,
-  //   @Query('sort') sort?: string,
-  //   @Query('q') q?: string): Promise<PaginationResponse> {
-  //   return this.userService.getPaginated(page, limit, fields, sort, q);
-  // }
+  @Response(400, 'Bad request')
+  @Get()
+  public async search(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('query') query?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDirection') sortDirection?: SortDirection): Promise<PaginationResponse<UserAttributes[]>> {
+    return this.userService.search({ page, limit, sortBy, sortDirection, query });
+  }
 
   @Response(400, 'Bad request')
   @Security('admin')

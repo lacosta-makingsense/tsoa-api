@@ -12,4 +12,6 @@ export interface UserRequestData {
 
 export interface UserAttributes extends UserRequestData {
   id?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

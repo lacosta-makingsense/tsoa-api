@@ -10,6 +10,14 @@ const models: TsoaRoute.Models = {
             "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
             "id": { "dataType": "double" },
+            "createdAt": { "dataType": "datetime" },
+            "updatedAt": { "dataType": "datetime" },
+        },
+    },
+    "PaginationResponseUserAttributes[]": {
+        "properties": {
+            "count": { "dataType": "double", "required": true },
+            "items": { "dataType": "array", "array": { "ref": "UserAttributes" }, "required": true },
         },
     },
     "UserRequestData": {
@@ -40,7 +48,33 @@ export function RegisterRoutes(app: any) {
             }
 
 
-            const promise = controller.getById.apply(controller, validatedArgs);
+            const promise = controller.get.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, next);
+        });
+    app.get('/service/users',
+        function(request: any, response: any, next: any) {
+            const args = {
+                page: { "in": "query", "name": "page", "dataType": "integer", "validators": { "isInt": { "errorMsg": "page" }, "minimum": { "value": 1 } } },
+                limit: { "in": "query", "name": "limit", "dataType": "integer", "validators": { "isInt": { "errorMsg": "limit" }, "minimum": { "value": 1 }, "maximum": { "value": 100 } } },
+                query: { "in": "query", "name": "query", "dataType": "string", "validators": { "isString": { "errorMsg": "query" } } },
+                sortBy: { "in": "query", "name": "sortBy", "dataType": "string", "validators": { "isString": { "errorMsg": "sortBy" } } },
+                sortDirection: { "in": "query", "name": "sortDirection", "dataType": "enum", "enums": ["ASC", "DESC"] },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = iocContainer.get<UserController>(UserController);
+            if (typeof controller['setStatus'] === 'function') {
+                (<any>controller).setStatus(undefined);
+            }
+
+
+            const promise = controller.search.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, next);
         });
     app.post('/service/users',

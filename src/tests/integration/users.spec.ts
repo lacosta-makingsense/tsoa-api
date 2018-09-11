@@ -77,18 +77,27 @@ describe(`${entityName} - ${route}`, () => {
     });
   });
 
-  // describe('GET', () => {
-  //   it(`should get paginated: ${entityName}`, async () => {
-  //     const res = await app.get(
-  //       `${route}?page=1&limit=1&sort={"email":"asc"}&fields=email&q={"email":"${model.email}"}`
-  //     );
-  //     integrationHelper.testPagination(res);
-  //   });
-  //   it(`should FAIL to get paginated: ${entityName}`, async () => {
-  //     const res = await app.get(route);
-  //     expect(res.status).to.equal(400);
-  //   });
-  // });
+  describe('GET', () => {
+    it(`should search`, async () => {
+      const user1 = await integrationOperations.createUser(1);
+      const user2 = await integrationOperations.createUser(2);
+
+      const res = await integrationHelper.app.get(
+        `${route}?page=1&limit=1&sortBy=email&sortDirection=DESC&query=user`
+      );
+      expect(res.status).to.equal(200);
+      expect(res.body.count).to.equal(2);
+      expect(res.body.items.length).to.equal(1);
+      expect(res.body.items[0].id).to.equal(user2.id);
+      expect(res.body.items[0].email).to.equal(user2.email);
+      expect(res.body.items[0].name).to.equal(user2.name);
+    });
+
+    it(`should fail to search on invalid params`, async () => {
+      const res = await integrationHelper.app.get(`${route}?page=0`);
+      expect(res.status).to.equal(400);
+    });
+  });
 
   describe('GET /{id}', () => {
     it(`should get one`, async () => {

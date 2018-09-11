@@ -19,11 +19,40 @@
 					"type": "number",
 					"format": "double",
 					"x-nullable": true
+				},
+				"createdAt": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
+				},
+				"updatedAt": {
+					"type": "string",
+					"format": "date-time",
+					"x-nullable": true
 				}
 			},
 			"required": [
 				"email",
 				"name"
+			],
+			"type": "object"
+		},
+		"PaginationResponseUserAttributes[]": {
+			"properties": {
+				"count": {
+					"type": "number",
+					"format": "double"
+				},
+				"items": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/UserAttributes"
+					}
+				}
+			},
+			"required": [
+				"count",
+				"items"
 			],
 			"type": "object"
 		},
@@ -56,7 +85,7 @@
 	"paths": {
 		"/users/{id}": {
 			"get": {
-				"operationId": "GetById",
+				"operationId": "Get",
 				"produces": [
 					"application/json"
 				],
@@ -154,6 +183,68 @@
 			}
 		},
 		"/users": {
+			"get": {
+				"operationId": "Search",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/PaginationResponseUserAttributes[]"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					}
+				},
+				"tags": [
+					"users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"format": "int32",
+						"type": "integer",
+						"minimum": 1
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"format": "int32",
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 100
+					},
+					{
+						"in": "query",
+						"name": "query",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"in": "query",
+						"name": "sortBy",
+						"required": false,
+						"type": "string"
+					},
+					{
+						"in": "query",
+						"name": "sortDirection",
+						"required": false,
+						"type": "string",
+						"enum": [
+							"ASC",
+							"DESC"
+						]
+					}
+				]
+			},
 			"post": {
 				"operationId": "Create",
 				"produces": [
