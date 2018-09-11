@@ -76,7 +76,7 @@
 		}
 	},
 	"info": {
-		"title": "opya-backend",
+		"title": "tsoa-api",
 		"version": "1.0.0",
 		"license": {
 			"name": "ISC"
