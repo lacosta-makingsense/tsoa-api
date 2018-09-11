@@ -36,7 +36,8 @@ export class Server {
     const dbConnection = iocContainer.get<DbConnection>(DbConnection);
     await dbConnection.connect();
 
-    iocContainer.get<Models>(Models);
+    const models = iocContainer.get<Models>(Models);
+    models.setup();
 
     const listen = this.app.listen(this.port);
     Logger.info(`${config.environment} server running on port: ${this.port}`);

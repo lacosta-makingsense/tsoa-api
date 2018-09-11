@@ -12,10 +12,11 @@ export class Models {
   private sequelize: Sequelize.Sequelize;
 
   constructor(@inject(DbConnection) protected dbConnection: DbConnection) {
+  }
+
+  public setup() {
     this.sequelize = this.dbConnection.db;
-
     this.loadModels();
-
     this.setupAssociations();
   }
 
