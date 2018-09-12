@@ -15,25 +15,24 @@
 					"type": "string",
 					"minLength": 1
 				},
-				"id": {
-					"type": "number",
-					"format": "double",
-					"x-nullable": true
+				"_id": {
+					"type": "object"
 				},
 				"createdAt": {
 					"type": "string",
-					"format": "date-time",
-					"x-nullable": true
+					"format": "date-time"
 				},
 				"updatedAt": {
 					"type": "string",
-					"format": "date-time",
-					"x-nullable": true
+					"format": "date-time"
 				}
 			},
 			"required": [
 				"email",
-				"name"
+				"name",
+				"_id",
+				"createdAt",
+				"updatedAt"
 			],
 			"type": "object"
 		},
@@ -95,6 +94,9 @@
 						"schema": {
 							"$ref": "#/definitions/UserAttributes"
 						}
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -106,8 +108,8 @@
 						"in": "path",
 						"name": "id",
 						"required": true,
-						"format": "int32",
-						"type": "integer"
+						"type": "string",
+						"pattern": "^[A-Fa-f\\d]{24}$"
 					}
 				]
 			},
@@ -125,6 +127,9 @@
 					},
 					"400": {
 						"description": "Bad request"
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -140,8 +145,8 @@
 						"in": "path",
 						"name": "id",
 						"required": true,
-						"format": "int32",
-						"type": "integer"
+						"type": "string",
+						"pattern": "^[A-Fa-f\\d]{24}$"
 					},
 					{
 						"in": "body",
@@ -161,6 +166,9 @@
 				"responses": {
 					"204": {
 						"description": "No content"
+					},
+					"404": {
+						"description": "Not Found"
 					}
 				},
 				"tags": [
@@ -176,8 +184,8 @@
 						"in": "path",
 						"name": "id",
 						"required": true,
-						"format": "int32",
-						"type": "integer"
+						"type": "string",
+						"pattern": "^[A-Fa-f\\d]{24}$"
 					}
 				]
 			}
@@ -241,7 +249,8 @@
 						"enum": [
 							"ASC",
 							"DESC"
-						]
+						],
+						"pattern": "^ASC|DESC$"
 					}
 				]
 			},

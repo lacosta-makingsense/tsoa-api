@@ -30,14 +30,14 @@ describe('UserService', () => {
     const user = { email: 'test' };
     stub.returns(Promise.resolve(user));
 
-    expect(await service.getById(1)).to.equal(user);
+    expect(await service.getById('id')).to.equal(user);
   });
 
   it('should throw an error if no user is found', async () => {
     stub.returns(Promise.resolve(null));
 
     try {
-      await service.getById(1);
+      await service.getById('id');
       expect(true).to.be.false; // tslint:disable-line
     } catch (e) {
       expect(e instanceof ApiError).to.be.true; // tslint:disable-line

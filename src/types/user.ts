@@ -10,8 +10,12 @@ export interface UserRequestData {
   name: string;
 }
 
+type UserRequestKeys = (keyof UserRequestData)[];
+
+export const USER_REQUEST_KEYS: UserRequestKeys = [ 'email', 'name' ];
+
 export interface UserAttributes extends UserRequestData {
-  id?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  _id: any;
+  createdAt: Date;
+  updatedAt: Date;
 }

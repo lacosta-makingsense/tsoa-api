@@ -9,9 +9,9 @@ const models: TsoaRoute.Models = {
         "properties": {
             "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
-            "id": { "dataType": "double" },
-            "createdAt": { "dataType": "datetime" },
-            "updatedAt": { "dataType": "datetime" },
+            "_id": { "dataType": "any", "required": true },
+            "createdAt": { "dataType": "datetime", "required": true },
+            "updatedAt": { "dataType": "datetime", "required": true },
         },
     },
     "PaginationResponseUserAttributes[]": {
@@ -32,7 +32,7 @@ export function RegisterRoutes(app: any) {
     app.get('/service/users/:id',
         function(request: any, response: any, next: any) {
             const args = {
-                id: { "in": "path", "name": "id", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "id" } } },
+                id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
             };
 
             let validatedArgs: any[] = [];
@@ -58,7 +58,7 @@ export function RegisterRoutes(app: any) {
                 limit: { "in": "query", "name": "limit", "dataType": "integer", "validators": { "isInt": { "errorMsg": "limit" }, "minimum": { "value": 1 }, "maximum": { "value": 100 } } },
                 query: { "in": "query", "name": "query", "dataType": "string", "validators": { "isString": { "errorMsg": "query" } } },
                 sortBy: { "in": "query", "name": "sortBy", "dataType": "string", "validators": { "isString": { "errorMsg": "sortBy" } } },
-                sortDirection: { "in": "query", "name": "sortDirection", "dataType": "enum", "enums": ["ASC", "DESC"] },
+                sortDirection: { "in": "query", "name": "sortDirection", "dataType": "enum", "enums": ["ASC", "DESC"], "validators": { "pattern": { "value": "^ASC|DESC$" } } },
             };
 
             let validatedArgs: any[] = [];
@@ -104,7 +104,7 @@ export function RegisterRoutes(app: any) {
         authenticateMiddleware([{ "admin": [] }]),
         function(request: any, response: any, next: any) {
             const args = {
-                id: { "in": "path", "name": "id", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "id" } } },
+                id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
                 body: { "in": "body", "name": "body", "required": true, "ref": "UserRequestData" },
             };
 
@@ -128,7 +128,7 @@ export function RegisterRoutes(app: any) {
         authenticateMiddleware([{ "admin": [] }]),
         function(request: any, response: any, next: any) {
             const args = {
-                id: { "in": "path", "name": "id", "required": true, "dataType": "integer", "validators": { "isInt": { "errorMsg": "id" } } },
+                id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
             };
 
             let validatedArgs: any[] = [];

@@ -1,6 +1,6 @@
 import { ValidateError } from 'tsoa';
 import { Request, Response, NextFunction } from 'express';
-import { UniqueConstraintError } from 'sequelize';
+import { ValidationError } from 'mongoose';
 
 import { Logger } from '../util/logger';
 import { ApiError, InternalServerError, BadRequest, UnprocessableEntity } from '../types/api-error';
@@ -12,7 +12,7 @@ export default function errorHandler(error: Error, req: Request, res: Response, 
     apiError = error;
   } else if (error instanceof ValidateError) {
     apiError = new BadRequest();
-  } else if (error instanceof UniqueConstraintError) {
+  } else if (error.name === 'ValidationError') {
     apiError = new UnprocessableEntity();
   } else {
     apiError = new InternalServerError();

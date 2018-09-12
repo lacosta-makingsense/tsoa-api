@@ -3,7 +3,7 @@ import { SuperTest } from 'supertest';
 
 import { iocContainer, inject, injectable } from '../config/ioc';
 import { DbConnection } from '../config/db-connection';
-import { Models } from '../models';
+import '../models';
 import { Server } from '../server/server';
 import { ROOT_PATH } from './constants';
 
@@ -12,8 +12,7 @@ class IntegrationHelper {
   public app: SuperTest<any>;
   public rootPath = ROOT_PATH;
 
-  constructor(@inject(DbConnection) private dbConnection: DbConnection,
-              @inject(Models) private models: Models) { // tslint:disable-line
+  constructor(@inject(DbConnection) private dbConnection: DbConnection) {
   }
 
   public async setupDb() {

@@ -1,11 +1,9 @@
-import { Op, FindOptions } from 'sequelize';
-
 import { ProvideSingleton, inject } from '../config/ioc';
-import { UserInstance, UserModel } from '../models/user';
+import { UserModel, UserDocument } from '../models/user';
 import { NotFound } from '../types/api-error';
 import { UserRequestData } from '../types/user';
 import { TYPES } from '../types/ioc';
-import { PaginationParams, PaginationResponse } from '../types/pagination';
+import { PaginationParams, PaginationResponse, SORT_DIRECTION_MAP } from '../types/pagination';
 
 @ProvideSingleton(UserService)
 export class UserService {
@@ -13,7 +11,7 @@ export class UserService {
   constructor(@inject(TYPES.UserModel) protected userModel: UserModel) {
   }
 
-  public async getById(id: number): Promise<UserInstance> {
+  public async getById(id: string): Promise<UserDocument> {
     const user = await this.userModel.findById(id);
 
     if (! user) {
@@ -23,45 +21,57 @@ export class UserService {
     return user;
   }
 
-  public async create(userData: UserRequestData): Promise<UserInstance> {
+  public async create(userData: UserRequestData): Promise<UserDocument> {
     return await this.userModel.create(userData);
   }
 
-  public async update(id: number, userData: UserRequestData): Promise<UserInstance> {
-    const user = await this.getById(id);
+  public async update(id: string, userData: UserRequestData): Promise<UserDocument> {
+    const options = { new: true, runValidators: true, context: 'query' };
+    const user = await this.userModel.findOneAndUpdate({ _id: id }, userData, options);
 
-    return await user.update(userData);
+    if (! user) {
+      throw new NotFound();
+    }
+
+    return user;
   }
 
-  public async delete(id: number): Promise<void> {
-    const user = await this.getById(id);
+  public async delete(id: string): Promise<void> {
+    const user = await (<any> this.userModel).findOneAndDelete({ _id: id });
 
-    return await user.destroy();
+    if (! user) {
+      throw new NotFound();
+    }
+
+    return user;
   }
 
-  public async search(params: PaginationParams): Promise<PaginationResponse<UserInstance[]>> {
+  public async search(params: PaginationParams): Promise<PaginationResponse<UserDocument[]>> {
     const { query, limit = 100, page = 1, sortBy, sortDirection = 'ASC' } = params;
 
-    const options: FindOptions<UserModel> = {
-      limit,
-      offset: (page - 1) * limit
-    };
+    const queryParams: any = {};
 
     if (query) {
-      options.where = {
-        [Op.or]: [
-          { email: { [Op.like]: `%${query}%` } },
-          { name: { [Op.like]: `%${query}%` } }
-        ]
-      };
+      queryParams.$or = [
+        { email: { $regex: query, $options: 'i' } },
+        { name: { $regex: query, $options: 'i' } }
+      ];
     }
+
+    const findQuery = this.userModel
+      .find(queryParams)
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     if (sortBy) {
-      options.order = [ [ sortBy, sortDirection ] ];
+      findQuery.sort({ [sortBy]: SORT_DIRECTION_MAP[sortDirection] });
     }
 
-    const { rows, count } = await this.userModel.findAndCount(options);
+    const [ items, count ] = await Promise.all([
+      findQuery,
+      this.userModel.countDocuments(queryParams)
+    ]);
 
-    return { count, items: rows };
+    return { count, items };
   }
 }

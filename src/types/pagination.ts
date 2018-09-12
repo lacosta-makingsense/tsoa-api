@@ -13,3 +13,8 @@ export interface PaginationParams {
   sortBy?: string;
   sortDirection?: SortDirection;
 }
+
+export const SORT_DIRECTION_MAP = {
+  ASC: 'ascending',
+  DESC: 'descending'
+};

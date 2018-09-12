@@ -1,19 +1,37 @@
-import * as Sequelize from 'sequelize';
+import { Schema, Document, Model, model } from 'mongoose';
+import * as mongooseUniqueValidator from 'mongoose-unique-validator';
 
+import { iocContainer } from '../config/ioc';
 import { UserAttributes } from '../types/user';
+import { TYPES } from '../types/ioc';
 
-export type UserInstance = Sequelize.Instance<UserAttributes> & UserAttributes;
-export type UserModel = Sequelize.Model<UserInstance, UserAttributes>;
+export interface UserDocument extends Document, UserAttributes {
+  // Add definitions for instance methods here
+}
 
-export const UserModelFactory = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): UserModel => {
-    const model = sequelize.define<UserInstance, UserAttributes>('User', {
-      name: DataTypes.STRING,
-      email: { type: DataTypes.STRING, unique: true }
-    }, {});
+export interface UserModel extends Model<UserDocument> {
+  // Add definitions for static methods here
+}
 
-    model.associate = function(models: Sequelize.Models) {
-      // associations can be defined here
-    };
+let UserSchema = new Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    uniqueCaseInsensitive: true
+  },
+  name: {
+    type: String,
+    required: true
+  }
+}, { timestamps: true });
 
-    return model;
-};
+UserSchema.methods = {};
+
+UserSchema.plugin(mongooseUniqueValidator, { type: 'mongoose-unique-validator' });
+
+const User = model<UserDocument, UserModel>('User', UserSchema);
+
+iocContainer.bind<UserModel>(TYPES.UserModel).toConstantValue(User);
+
+export { User };

@@ -10,7 +10,7 @@ class IntegrationOperations {
   }
 
   public async deleteAllUsers() {
-    this.userModel.destroy({ where: {} });
+    return this.userModel.deleteMany({});
   }
 
   public async createUser(index: number) {

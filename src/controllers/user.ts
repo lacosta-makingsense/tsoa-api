@@ -14,9 +14,10 @@ import {
 } from 'tsoa';
 
 import { ProvideSingleton, inject } from '../config/ioc';
-import { UserAttributes, UserRequestData } from '../types/user';
+import { UserAttributes, UserRequestData, USER_REQUEST_KEYS } from '../types/user';
 import { PaginationResponse, SortDirection } from '../types/pagination';
 import { UserService } from '../services/user';
+import { pick } from '../util/operators';
 
 @Tags('users')
 @Route('users')
@@ -27,11 +28,12 @@ export class UserController extends Controller {
   }
 
   /**
-   * @param {number} id
-   * @isInt id
+   * @param {string} id
+   * @pattern id ^[A-Fa-f\d]{24}$
    */
+  @Response(404, 'Not Found')
   @Get('{id}')
-  public async get(@Path() id: number): Promise<UserAttributes> {
+  public async get(@Path() id: string): Promise<UserAttributes> {
     const user = await this.userService.getById(id);
     return user.toJSON();
   }
@@ -49,7 +51,7 @@ export class UserController extends Controller {
    * @param {string} sortBy
    * @isString sortBy
    * @param {string} sortDirection
-   * @pattern ^ASC|DESC$
+   * @pattern sortDirection ^ASC|DESC$
    */
   @Response(400, 'Bad request')
   @Get()
@@ -66,27 +68,29 @@ export class UserController extends Controller {
   @Security('admin')
   @Post()
   public async create(@Body() body: UserRequestData): Promise<UserAttributes> {
-    return this.userService.create(body);
+    return this.userService.create(pick(body, USER_REQUEST_KEYS));
   }
 
   /**
-   * @param {number} id
-   * @isInt id
+   * @param {string} id
+   * @pattern id ^[A-Fa-f\d]{24}$
    */
   @Response(400, 'Bad request')
+  @Response(404, 'Not Found')
   @Security('admin')
   @Put('{id}')
-  public async update(@Path() id: number, @Body() body: UserRequestData): Promise<UserAttributes> {
-    return this.userService.update(id, body);
+  public async update(@Path() id: string, @Body() body: UserRequestData): Promise<UserAttributes> {
+    return this.userService.update(id, pick(body, USER_REQUEST_KEYS));
   }
 
   /**
-   * @param {number} id
-   * @isInt id
+   * @param {string} id
+   * @pattern id ^[A-Fa-f\d]{24}$
    */
+  @Response(404, 'Not Found')
   @Security('admin')
   @Delete('{id}')
-  public async delete(@Path() id: number): Promise<void> {
+  public async delete(@Path() id: string): Promise<void> {
     await this.userService.delete(id);
     return Promise.resolve();
   }

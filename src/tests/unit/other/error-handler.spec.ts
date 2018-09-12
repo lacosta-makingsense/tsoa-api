@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { stub } from 'sinon';
 
 import { ValidateError } from 'tsoa';
-import { UniqueConstraintError } from 'sequelize';
 
 import errorHandler from '../../../middlewares/error-handler';
 import { InternalServerError, BadRequest, UnprocessableEntity, NotFound } from '../../../types/api-error';
@@ -58,7 +57,9 @@ describe('ErrorHandler', () => {
   });
 
   it('should handle sequelize unique key errors', () => {
-    const error = new UniqueConstraintError({});
+    const error = new Error('Error!');
+    error.name = 'ValidationError';
+
     errorHandler(
       error,
       null,
