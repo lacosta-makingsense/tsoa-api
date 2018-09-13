@@ -4,6 +4,35 @@
 		"application/json"
 	],
 	"definitions": {
+		"AuthResponse": {
+			"properties": {
+				"token": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"token"
+			],
+			"type": "object"
+		},
+		"LoginRequest": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+				},
+				"password": {
+					"type": "string",
+					"minLength": 1
+				}
+			},
+			"required": [
+				"email",
+				"password"
+			],
+			"type": "object"
+		},
 		"UserRole": {
 			"enum": [
 				"admin",
@@ -133,6 +162,42 @@
 		}
 	},
 	"paths": {
+		"/auth": {
+			"post": {
+				"operationId": "Login",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"$ref": "#/definitions/AuthResponse"
+						}
+					},
+					"400": {
+						"description": "Bad request"
+					},
+					"401": {
+						"description": "Unauthorized"
+					}
+				},
+				"tags": [
+					"auth"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"required": true,
+						"schema": {
+							"$ref": "#/definitions/LoginRequest"
+						}
+					}
+				]
+			}
+		},
 		"/users/{id}": {
 			"get": {
 				"operationId": "Get",

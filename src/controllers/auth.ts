@@ -27,10 +27,12 @@ export class AuthController extends Controller {
     super();
   }
 
-  // @Response(400, 'Bad request')
-  // @Response(401, 'Unauthorized')
-  // @Post()
-  // public async login(@Body() body: LoginRequest): Promise<AuthResponse> {
-  //   // return this.authenticationService.createToken();
-  // }
+  @Response(400, 'Bad request')
+  @Response(401, 'Unauthorized')
+  @Post()
+  public async login(@Body() body: LoginRequest): Promise<AuthResponse> {
+    const user = await this.userService.authenticate(body);
+    const token = this.authenticationService.createToken(user);
+    return { token };
+  }
 }

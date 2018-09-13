@@ -1,7 +1,8 @@
 import { ProvideSingleton, inject } from '../config/ioc';
 import { UserModel, UserDocument } from '../models/user';
-import { NotFound } from '../types/api-error';
+import { NotFound, Unauthorized } from '../types/api-error';
 import { UserRequest } from '../types/user';
+import { LoginRequest } from '../types/authentication';
 import { TYPES } from '../types/ioc';
 import { PaginationParams, PaginationResponse, SORT_DIRECTION_MAP } from '../types/pagination';
 
@@ -72,5 +73,22 @@ export class UserService {
     ]);
 
     return { count, items };
+  }
+
+  public async authenticate(login: LoginRequest) {
+    const user = await this.userModel.findOne({ email: login.email })
+      .select('+hashedPassword');
+
+    if (! user) {
+      throw new Unauthorized();
+    }
+
+    const result = await user.checkPassword(login.password);
+
+    if (! result) {
+      throw new Unauthorized();
+    }
+
+    return user;
   }
 }

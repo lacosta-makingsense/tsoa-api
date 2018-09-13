@@ -1,10 +1,22 @@
 /* tslint:disable */
 import { Controller, ValidateParam, FieldErrors, ValidateError, TsoaRoute } from 'tsoa';
 import { iocContainer } from './../config/ioc';
+import { AuthController } from './../controllers/auth';
 import { UserController } from './../controllers/user';
 import { expressAuthentication } from './../authentication/authentication';
 
 const models: TsoaRoute.Models = {
+    "AuthResponse": {
+        "properties": {
+            "token": { "dataType": "string", "required": true },
+        },
+    },
+    "LoginRequest": {
+        "properties": {
+            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
+            "password": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
+        },
+    },
     "UserRole": {
         "enums": ["admin", "user"],
     },
@@ -44,6 +56,28 @@ const models: TsoaRoute.Models = {
 };
 
 export function RegisterRoutes(app: any) {
+    app.post('/service/auth',
+        function(request: any, response: any, next: any) {
+            const args = {
+                body: { "in": "body", "name": "body", "required": true, "ref": "LoginRequest" },
+            };
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = iocContainer.get<AuthController>(AuthController);
+            if (typeof controller['setStatus'] === 'function') {
+                (<any>controller).setStatus(undefined);
+            }
+
+
+            const promise = controller.login.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, next);
+        });
     app.get('/service/users/:id',
         function(request: any, response: any, next: any) {
             const args = {

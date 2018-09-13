@@ -9,9 +9,10 @@ import { TYPES } from '../types/ioc';
 import { USER_ROLE_VALUES } from '../types/authorization';
 
 export interface UserDocument extends Document, UserAttributes {
-  // Add definitions for instance methods here
+  // Add definitions for instance attributes and methods here
   _password: string;
   hashedPassword: string;
+  checkPassword: (password: string) => Promise<boolean>;
 }
 
 export interface UserModel extends Model<UserDocument> {
@@ -47,7 +48,7 @@ let UserSchema = new Schema({
   }
 });
 
-UserSchema.methods.checkPassword = async (password): Promise<boolean> => {
+UserSchema.methods.checkPassword = async function(password): Promise<boolean> {
   return compare(password, this.hashedPassword);
 };
 

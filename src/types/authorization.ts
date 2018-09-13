@@ -3,13 +3,18 @@ export enum UserRole {
   User = 'user'
 }
 
-type UserScopes = {
-  [K in UserRole]: string[];
+export enum Scope {
+  UserWrite = 'user:write',
+  UserRead = 'user:read'
+}
+
+type AuthorizationScopes = {
+  [K in UserRole]: Scope[];
 };
 
-export const USER_SCOPES: UserScopes = {
-  admin: [],
-  user: []
+export const AUTHORIZATION_SCOPES: AuthorizationScopes = {
+  [UserRole.Admin]: [ Scope.UserRead, Scope.UserWrite ],
+  [UserRole.User]: [ Scope.UserRead ]
 };
 
 export const USER_ROLE_VALUES: string[] = Object.keys(UserRole).map(key => UserRole[key]);
