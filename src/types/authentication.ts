@@ -4,6 +4,10 @@ type TokenUserKeys = (keyof UserAttributes)[];
 
 export const TOKEN_USER_KEYS: TokenUserKeys = [ '_id', 'email', 'name' ];
 
+export enum AuthType {
+  JWT = 'jwt'
+}
+
 export interface TokenPayload {
   _id: any;
   name: string;

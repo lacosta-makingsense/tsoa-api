@@ -22,7 +22,7 @@ export default function errorHandler(error: Error, req: Request, res: Response, 
     `Error: ${apiError.statusCode}`,
     `Error Name: ${apiError.name}`,
     `Error Message: ${apiError.message}`,
-    'Original Error: ', error.message
+    'Original Error: ', error
   );
   res.status(apiError.statusCode).json({ name: apiError.name, message: apiError.message });
   next();

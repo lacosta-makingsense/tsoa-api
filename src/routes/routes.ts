@@ -79,6 +79,7 @@ export function RegisterRoutes(app: any) {
             promiseHandler(controller, promise, response, next);
         });
     app.get('/service/users/:id',
+        authenticateMiddleware([{ "jwt": ["user:read"] }]),
         function(request: any, response: any, next: any) {
             const args = {
                 id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
@@ -101,6 +102,7 @@ export function RegisterRoutes(app: any) {
             promiseHandler(controller, promise, response, next);
         });
     app.get('/service/users',
+        authenticateMiddleware([{ "jwt": ["user:read"] }]),
         function(request: any, response: any, next: any) {
             const args = {
                 page: { "in": "query", "name": "page", "dataType": "integer", "validators": { "isInt": { "errorMsg": "page" }, "minimum": { "value": 1 } } },
@@ -127,7 +129,7 @@ export function RegisterRoutes(app: any) {
             promiseHandler(controller, promise, response, next);
         });
     app.post('/service/users',
-        authenticateMiddleware([{ "admin": [] }]),
+        authenticateMiddleware([{ "jwt": ["user:write"] }]),
         function(request: any, response: any, next: any) {
             const args = {
                 body: { "in": "body", "name": "body", "required": true, "ref": "UserCreateRequest" },
@@ -150,7 +152,7 @@ export function RegisterRoutes(app: any) {
             promiseHandler(controller, promise, response, next);
         });
     app.put('/service/users/:id',
-        authenticateMiddleware([{ "admin": [] }]),
+        authenticateMiddleware([{ "jwt": ["user:write"] }]),
         function(request: any, response: any, next: any) {
             const args = {
                 id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
@@ -174,7 +176,7 @@ export function RegisterRoutes(app: any) {
             promiseHandler(controller, promise, response, next);
         });
     app.delete('/service/users/:id',
-        authenticateMiddleware([{ "admin": [] }]),
+        authenticateMiddleware([{ "jwt": ["user:write"] }]),
         function(request: any, response: any, next: any) {
             const args = {
                 id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },

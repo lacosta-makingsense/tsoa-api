@@ -23,7 +23,7 @@ export class AuthenticationService {
     });
   }
 
-  public decodeToken(token): TokenPayload {
+  public decodeToken(token: string): TokenPayload {
     try {
       return verify(token, config.jwt.secret, {
         algorithms: [ config.jwt.algorithm ]

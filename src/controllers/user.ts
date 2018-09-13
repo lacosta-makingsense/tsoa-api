@@ -31,7 +31,11 @@ export class UserController extends Controller {
    * @param {string} id
    * @pattern id ^[A-Fa-f\d]{24}$
    */
+  @Response(400, 'Bad request')
+  @Response(401, 'Unauthorized')
+  @Response(403, 'Forbidden')
   @Response(404, 'Not Found')
+  @Security('jwt', [ 'user:read' ])
   @Get('{id}')
   public async get(@Path() id: string): Promise<UserAttributes> {
     const user = await this.userService.getById(id);
@@ -54,6 +58,9 @@ export class UserController extends Controller {
    * @pattern sortDirection ^ASC|DESC$
    */
   @Response(400, 'Bad request')
+  @Response(401, 'Unauthorized')
+  @Response(403, 'Forbidden')
+  @Security('jwt', [ 'user:read' ])
   @Get()
   public async search(
     @Query('page') page?: number,
@@ -65,7 +72,9 @@ export class UserController extends Controller {
   }
 
   @Response(400, 'Bad request')
-  @Security('admin')
+  @Response(401, 'Unauthorized')
+  @Response(403, 'Forbidden')
+  @Security('jwt', [ 'user:write' ])
   @Post()
   public async create(@Body() body: UserCreateRequest): Promise<UserAttributes> {
     return this.userService.create(pick(body, USER_REQUEST_KEYS));
@@ -76,8 +85,10 @@ export class UserController extends Controller {
    * @pattern id ^[A-Fa-f\d]{24}$
    */
   @Response(400, 'Bad request')
+  @Response(401, 'Unauthorized')
+  @Response(403, 'Forbidden')
   @Response(404, 'Not Found')
-  @Security('admin')
+  @Security('jwt', [ 'user:write' ])
   @Put('{id}')
   public async update(@Path() id: string, @Body() body: UserRequest): Promise<UserAttributes> {
     return this.userService.update(id, pick(body, USER_REQUEST_KEYS));
@@ -87,8 +98,11 @@ export class UserController extends Controller {
    * @param {string} id
    * @pattern id ^[A-Fa-f\d]{24}$
    */
+  @Response(400, 'Bad request')
+  @Response(401, 'Unauthorized')
+  @Response(403, 'Forbidden')
   @Response(404, 'Not Found')
-  @Security('admin')
+  @Security('jwt', [ 'user:write' ])
   @Delete('{id}')
   public async delete(@Path() id: string): Promise<void> {
     await this.userService.delete(id);
