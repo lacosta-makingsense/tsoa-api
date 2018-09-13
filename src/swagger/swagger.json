@@ -4,6 +4,13 @@
 		"application/json"
 	],
 	"definitions": {
+		"UserRole": {
+			"enum": [
+				"admin",
+				"user"
+			],
+			"type": "string"
+		},
 		"UserAttributes": {
 			"properties": {
 				"email": {
@@ -14,6 +21,14 @@
 				"name": {
 					"type": "string",
 					"minLength": 1
+				},
+				"role": {
+					"$ref": "#/definitions/UserRole"
+				},
+				"password": {
+					"type": "string",
+					"minLength": 1,
+					"x-nullable": true
 				},
 				"_id": {
 					"type": "object"
@@ -30,6 +45,7 @@
 			"required": [
 				"email",
 				"name",
+				"role",
 				"_id",
 				"createdAt",
 				"updatedAt"
@@ -55,7 +71,7 @@
 			],
 			"type": "object"
 		},
-		"UserRequestData": {
+		"UserCreateRequest": {
 			"properties": {
 				"email": {
 					"type": "string",
@@ -65,11 +81,46 @@
 				"name": {
 					"type": "string",
 					"minLength": 1
+				},
+				"role": {
+					"$ref": "#/definitions/UserRole"
+				},
+				"password": {
+					"type": "string"
 				}
 			},
 			"required": [
 				"email",
-				"name"
+				"name",
+				"role",
+				"password"
+			],
+			"type": "object"
+		},
+		"UserRequest": {
+			"properties": {
+				"email": {
+					"type": "string",
+					"format": "email",
+					"pattern": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+				},
+				"name": {
+					"type": "string",
+					"minLength": 1
+				},
+				"role": {
+					"$ref": "#/definitions/UserRole"
+				},
+				"password": {
+					"type": "string",
+					"minLength": 1,
+					"x-nullable": true
+				}
+			},
+			"required": [
+				"email",
+				"name",
+				"role"
 			],
 			"type": "object"
 		}
@@ -153,7 +204,7 @@
 						"name": "body",
 						"required": true,
 						"schema": {
-							"$ref": "#/definitions/UserRequestData"
+							"$ref": "#/definitions/UserRequest"
 						}
 					}
 				]
@@ -284,7 +335,7 @@
 						"name": "body",
 						"required": true,
 						"schema": {
-							"$ref": "#/definitions/UserRequestData"
+							"$ref": "#/definitions/UserCreateRequest"
 						}
 					}
 				]
@@ -295,5 +346,11 @@
 		"application/json"
 	],
 	"swagger": "2.0",
-	"securityDefinitions": {}
+	"securityDefinitions": {
+		"jwt": {
+			"type": "apiKey",
+			"name": "access_token",
+			"in": "header"
+		}
+	}
 }

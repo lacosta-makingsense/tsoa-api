@@ -14,7 +14,7 @@ import {
 } from 'tsoa';
 
 import { ProvideSingleton, inject } from '../config/ioc';
-import { UserAttributes, UserRequestData, USER_REQUEST_KEYS } from '../types/user';
+import { UserAttributes, UserRequest, UserCreateRequest, USER_REQUEST_KEYS } from '../types/user';
 import { PaginationResponse, SortDirection } from '../types/pagination';
 import { UserService } from '../services/user';
 import { pick } from '../util/operators';
@@ -67,7 +67,7 @@ export class UserController extends Controller {
   @Response(400, 'Bad request')
   @Security('admin')
   @Post()
-  public async create(@Body() body: UserRequestData): Promise<UserAttributes> {
+  public async create(@Body() body: UserCreateRequest): Promise<UserAttributes> {
     return this.userService.create(pick(body, USER_REQUEST_KEYS));
   }
 
@@ -79,7 +79,7 @@ export class UserController extends Controller {
   @Response(404, 'Not Found')
   @Security('admin')
   @Put('{id}')
-  public async update(@Path() id: string, @Body() body: UserRequestData): Promise<UserAttributes> {
+  public async update(@Path() id: string, @Body() body: UserRequest): Promise<UserAttributes> {
     return this.userService.update(id, pick(body, USER_REQUEST_KEYS));
   }
 

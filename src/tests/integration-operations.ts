@@ -16,7 +16,9 @@ class IntegrationOperations {
   public async createUser(index: number) {
     return this.userModel.create({
       email: `user${index}@test.com`,
-      name: `User ${index}`
+      name: `User ${index}`,
+      role: 'admin',
+      password: 'test'
     });
   }
 

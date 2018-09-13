@@ -3,7 +3,8 @@ import { Types } from 'mongoose';
 
 import integrationHelper from '../integration-helper';
 import integrationOperations from '../integration-operations';
-import { UserRequestData } from '../../types/user';
+import { UserRequest, UserCreateRequest } from '../../types/user';
+import { UserRole } from '../../types/authorization';
 
 const route: string = `${integrationHelper.rootPath}/users`;
 const entityName: string = 'Users';
@@ -14,9 +15,11 @@ describe(`${entityName} - ${route}`, () => {
 
   describe('POST', () => {
     it('should create', async () => {
-      const userRequest: UserRequestData = {
+      const userRequest: UserCreateRequest = {
         email: 'test@email.com',
-        name: 'Test Name'
+        name: 'Test Name',
+        role: UserRole.Admin,
+        password: 'test'
       };
 
       const res = await integrationHelper.app.post(route).send(userRequest);
@@ -26,6 +29,11 @@ describe(`${entityName} - ${route}`, () => {
       expect(res.body.name).to.equal('Test Name');
       expect(res.body).to.have.property('email');
       expect(res.body.email).to.equal('test@email.com');
+      expect(res.body).to.have.property('role');
+      expect(res.body.role).to.equal('admin');
+      expect(res.body).not.to.have.property('password');
+      expect(res.body).not.to.have.property('_password');
+      expect(res.body).not.to.have.property('hashedPassword');
     });
 
     it('should fail to create if there are missing params', async () => {
@@ -34,9 +42,11 @@ describe(`${entityName} - ${route}`, () => {
     });
 
     it('should fail to create if there are invalid params', async () => {
-      const userRequest: UserRequestData = {
+      const userRequest: UserCreateRequest = {
         email: 'invalid',
-        name: 'Test Name'
+        name: 'Test Name',
+        role: UserRole.Admin,
+        password: 'test'
       };
 
       const res = await integrationHelper.app.post(route).send(userRequest);
@@ -48,9 +58,11 @@ describe(`${entityName} - ${route}`, () => {
     it('should update', async () => {
       const user = await integrationOperations.createUser(1);
 
-      const userRequest: UserRequestData = {
+      const userRequest: UserRequest = {
         email: 'test@email.com',
-        name: 'Test Name'
+        name: 'Test Name',
+        role: UserRole.Admin,
+        password: 'test'
       };
 
       const res = await integrationHelper.app.put(`${route}/${user.id}`).send(userRequest);
@@ -58,12 +70,17 @@ describe(`${entityName} - ${route}`, () => {
       expect(res.body._id).to.deep.equal(user.id);
       expect(res.body.email).to.deep.equal('test@email.com');
       expect(res.body.name).to.deep.equal('Test Name');
+      expect(res.body.role).to.deep.equal('admin');
+      expect(res.body).not.to.have.property('password');
+      expect(res.body).not.to.have.property('_password');
+      expect(res.body).not.to.have.property('hashedPassword');
     });
 
     it('should fail to update if the doc does not exists', async () => {
-      const userRequest: UserRequestData = {
+      const userRequest: UserRequest = {
         email: 'test@email.com',
-        name: 'Test Name'
+        name: 'Test Name',
+        role: UserRole.Admin
       };
       const id = Types.ObjectId();
 
@@ -72,9 +89,10 @@ describe(`${entityName} - ${route}`, () => {
     });
 
     it('should fail to update if the id is invalid', async () => {
-      const userRequest: UserRequestData = {
+      const userRequest: UserRequest = {
         email: 'test@email.com',
-        name: 'Test Name'
+        name: 'Test Name',
+        role: UserRole.Admin
       };
 
       const res = await integrationHelper.app.put(`${route}/dummy`).send(userRequest);
@@ -103,6 +121,7 @@ describe(`${entityName} - ${route}`, () => {
       expect(res.body.items[0]._id).to.equal(user2.id);
       expect(res.body.items[0].email).to.equal(user2.email);
       expect(res.body.items[0].name).to.equal(user2.name);
+      expect(res.body.items[0].role).to.equal(user2.role);
     });
 
     it('should fail to search with invalid params', async () => {

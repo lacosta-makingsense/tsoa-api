@@ -18,5 +18,13 @@ export default {
       reconnectInterval: Number(process.env.MONGODB_RECONNECT_INTERVAL) || 1000,
       useNewUrlParser: true
     }
+  },
+  jwt: {
+    secret: env.JWT_SECRET || 'secret',
+    expiration: env.JWT_EXPIRATION || '2h',
+    algorithm: env.JWT_ALGORITHM || 'HS256'
+  },
+  password: {
+    saltOrRounds: env.SALT_OR_ROUNDS || 10
   }
 };

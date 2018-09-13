@@ -5,10 +5,15 @@ import { UserController } from './../controllers/user';
 import { expressAuthentication } from './../authentication/authentication';
 
 const models: TsoaRoute.Models = {
+    "UserRole": {
+        "enums": ["admin", "user"],
+    },
     "UserAttributes": {
         "properties": {
             "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
+            "role": { "ref": "UserRole", "required": true },
+            "password": { "dataType": "string", "validators": { "minLength": { "value": 1 } } },
             "_id": { "dataType": "any", "required": true },
             "createdAt": { "dataType": "datetime", "required": true },
             "updatedAt": { "dataType": "datetime", "required": true },
@@ -20,10 +25,20 @@ const models: TsoaRoute.Models = {
             "items": { "dataType": "array", "array": { "ref": "UserAttributes" }, "required": true },
         },
     },
-    "UserRequestData": {
+    "UserCreateRequest": {
         "properties": {
             "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
             "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
+            "role": { "ref": "UserRole", "required": true },
+            "password": { "dataType": "string", "required": true },
+        },
+    },
+    "UserRequest": {
+        "properties": {
+            "email": { "dataType": "string", "required": true, "validators": { "pattern": { "value": "^[a-zA-Z0-9_.+-]+\\x40[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$" } } },
+            "name": { "dataType": "string", "required": true, "validators": { "minLength": { "value": 1 } } },
+            "role": { "ref": "UserRole", "required": true },
+            "password": { "dataType": "string", "validators": { "minLength": { "value": 1 } } },
         },
     },
 };
@@ -81,7 +96,7 @@ export function RegisterRoutes(app: any) {
         authenticateMiddleware([{ "admin": [] }]),
         function(request: any, response: any, next: any) {
             const args = {
-                body: { "in": "body", "name": "body", "required": true, "ref": "UserRequestData" },
+                body: { "in": "body", "name": "body", "required": true, "ref": "UserCreateRequest" },
             };
 
             let validatedArgs: any[] = [];
@@ -105,7 +120,7 @@ export function RegisterRoutes(app: any) {
         function(request: any, response: any, next: any) {
             const args = {
                 id: { "in": "path", "name": "id", "required": true, "dataType": "string", "validators": { "pattern": { "value": "^[A-Fa-f\\d]{24}$" } } },
-                body: { "in": "body", "name": "body", "required": true, "ref": "UserRequestData" },
+                body: { "in": "body", "name": "body", "required": true, "ref": "UserRequest" },
             };
 
             let validatedArgs: any[] = [];
