@@ -5,7 +5,7 @@ import { AuthenticationService } from '../services/authentication';
 import { Unauthorized, Forbidden } from '../types/api-error';
 
 @injectable()
-class JWTAuthentication {
+export class JWTAuthentication {
   constructor(@inject(AuthenticationService) private authenticationService: AuthenticationService) {
   }
 
@@ -20,6 +20,7 @@ class JWTAuthentication {
 
     const token = matches[1];
 
+    // Throws an `Unauthorized` error if decoding fails
     const decodedToken = this.authenticationService.decodeToken(token);
 
     const isAuthorized = scopes.every(scope => decodedToken.scopes.indexOf(scope) !== -1);
