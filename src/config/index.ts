@@ -7,12 +7,24 @@ config({ path: pathResolve(__dirname, `./env/.env.${env.NODE_ENV}`) });
 export default {
   environment: env.NODE_ENV,
   port: Number(env.PORT),
-  SQL: {
-    db: env.SQL_DB,
-    username: env.SQL_USERNAME,
-    password: env.SQL_PASSWORD,
-    host: env.SQL_HOST,
-    port: Number(env.SQL_PORT),
-    dialect: env.SQL_DIALECT
+  mongo: {
+    url: env.MONGODB_URL,
+    debug: env.MONGODB_DEBUG === 'true' || false,
+    connectionOptions: {
+      autoReconnect: process.env.MONGODB_AUTO_RECONNECT === 'false' ? false : true,
+      socketTimeoutMS: Number(process.env.MONGODB_SOCKET_TIMEOUT) || 1800000,
+      connectTimeoutMS: Number(process.env.MONGODB_CONNECT_TIMEOUT) || 30000,
+      reconnectTries: Number(process.env.MONGODB_RECONNECT_TRIES) || Number.MAX_VALUE,
+      reconnectInterval: Number(process.env.MONGODB_RECONNECT_INTERVAL) || 1000,
+      useNewUrlParser: true
+    }
+  },
+  jwt: {
+    secret: env.JWT_SECRET || 'secret',
+    expiration: env.JWT_EXPIRATION || '2h',
+    algorithm: env.JWT_ALGORITHM || 'HS256'
+  },
+  password: {
+    saltOrRounds: env.SALT_OR_ROUNDS || 10
   }
 };

@@ -1,13 +1,13 @@
 import { Request } from 'express';
 
 import { Unauthorized } from '../types/api-error';
+import jwtAuthentication from './jwt';
+import { AuthType } from '../types/authentication';
 
-export type res = { status: number; message: string };
-
-export async function expressAuthentication(request: Request, securityName: string, scopes?: string[]): Promise<res> {
+export async function expressAuthentication(request: Request, securityName: string, scopes?: string[]): Promise<any> {
   switch (securityName) {
-    case 'admin':
-      return null; /** everyone is an admin now :D */
+    case AuthType.JWT:
+      return jwtAuthentication.check(request, scopes);
   }
   throw new Unauthorized();
 }

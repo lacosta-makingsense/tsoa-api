@@ -1,4 +1,4 @@
-import * as Sequelize from 'sequelize';
+import * as mongoose from 'mongoose';
 
 import config from '../config';
 import { Logger } from '../util/logger';
@@ -6,26 +6,36 @@ import { ProvideSingleton } from './ioc';
 
 @ProvideSingleton(DbConnection)
 export class DbConnection {
-  public db: Sequelize.Sequelize;
-
   constructor() {
-    Logger.log(`connecting to ${config.environment} SQL`);
-    const { SQL: dbConfig } = config;
-    this.db = new Sequelize(dbConfig.db, dbConfig.username, dbConfig.password, {
-      port: dbConfig.port,
-      host: dbConfig.host,
-      dialect: dbConfig.dialect,
-      logging: (l) => Logger.verbose(l),
-      // operatorsAliases: Sequelize.Op as any,
-      define: { charset: 'utf8', collate: 'utf8_general_ci' }
-    });
+    Logger.log(`connecting to ${config.environment} MongoDB`);
   }
 
   public async connect() {
-    await this.db.authenticate();
+    try {
+      await mongoose.connect(config.mongo.url, config.mongo.connectionOptions);
+    } catch (err) {
+      this.connectionError(err);
+    }
+
+    mongoose.connection.on('error', (err) => {
+      this.connectionError(err);
+    });
+
+    mongoose.connection.on('reconnect', function () {
+      Logger.warn('Reconnecting to MongoDB');
+    });
+
+    mongoose.set('useCreateIndex', true);
+
+    mongoose.set('debug', config.mongo.debug);
   }
 
   public async sync() {
-    await this.db.sync({ force: true });
+    await mongoose.connection.dropDatabase();
+  }
+
+  private connectionError(err) {
+    Logger.error('MongoDB connection error: ', err);
+    process.exit(-1);
   }
 }

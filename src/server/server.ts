@@ -10,7 +10,7 @@ import { RegisterRoutes } from '../routes/routes';
 import { Logger } from '../util/logger';
 import { iocContainer } from '../config/ioc';
 import { DbConnection } from '../config/db-connection';
-import { Models } from '../models';
+import '../models';
 import '../controllers';
 
 export class Server {
@@ -35,8 +35,6 @@ export class Server {
 
     const dbConnection = iocContainer.get<DbConnection>(DbConnection);
     await dbConnection.connect();
-
-    iocContainer.get<Models>(Models);
 
     const listen = this.app.listen(this.port);
     Logger.info(`${config.environment} server running on port: ${this.port}`);

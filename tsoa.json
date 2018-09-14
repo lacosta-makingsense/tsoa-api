@@ -3,7 +3,14 @@
     "entryFile": "./src/routes/routes.ts",
     "outputDirectory": "./src/swagger",
     "specMerging": "recursive",
-    "spec": {}
+    "spec": {},
+    "securityDefinitions": {
+      "jwt": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
   },
   "routes": {
     "entryFile": "./src/controllers/index.ts",
