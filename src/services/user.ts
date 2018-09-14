@@ -9,7 +9,7 @@ import { PaginationParams, PaginationResponse, SORT_DIRECTION_MAP } from '../typ
 @ProvideSingleton(UserService)
 export class UserService {
 
-  constructor(@inject(TYPES.UserModel) protected userModel: UserModel) {
+  constructor(@inject(TYPES.UserModel) private userModel: UserModel) {
   }
 
   public async getById(id: string): Promise<UserDocument> {
